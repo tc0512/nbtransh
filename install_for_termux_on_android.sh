@@ -1,4 +1,6 @@
 #!/bin/bash
+echo -e "\033nbtransh installer for termux on Android\033[0m"
+echo ""
 echo -e "\033[32mVerifying environment...\033[0m"
 if command -v pkg >/dev/null 2>&1; then
     echo "✓ Detected: Termux on Android"
