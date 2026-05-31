@@ -1,5 +1,5 @@
 #!/bin/bash
-echo -e "\033nbtransh installer for termux on Android\033[0m"
+echo -e "\033nnbtransh installer for termux on Android\033[0m"
 echo ""
 echo -e "\033[32mVerifying environment...\033[0m"
 if command -v pkg >/dev/null 2>&1; then
@@ -47,4 +47,4 @@ echo "alias nbtransh='python /data/data/com.termux/files/home/nbtransh/nbtransh.
 echo -e "\033[32mAll done!\033[0m"
 echo "· The nbtransh work directory is /data/data/com.termux/files/home/nbtransh/"
 echo "  Please donot remove it."
-echo "· To source the alias,run `source ~/.bashrc`"
+echo "· To source the alias,run 'source ~/.bashrc'"
