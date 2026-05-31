@@ -25,11 +25,17 @@ fi
 echo -e "\033[32m[2/4] Install runtime dependencies\033[0m"
 pkg update -y
 pkg install -y python-lxml
-if pip show sympy &>/dev/null; then
+if pip show translate &>/dev/null; then
     echo "translate is already installed"
 else
     echo "translate is not installed,so install it"
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ translate
+fi
+if pip show rich &>/dev/null; then
+    echo "rich is already installed"
+else
+    echo "rich is not installed,so install it"
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ rich
 fi
 echo -e "\033[32m[3/4] Clone repository\033[0m"
 cd ~
@@ -38,7 +44,7 @@ git clone https://github.com/tc0512/nbtransh.git
 rm nbtransh/*.sh
 echo -e "\033[32m[4/4] Set alias to launch faster\033[0m"
 echo "alias nbtransh='python /data/data/com.termux/files/home/nbtransh/nbtransh.py'" >> .bashrc
-source ~/.bashrc
 echo -e "\033[32mAll done!\033[0m"
-echo "The nbtransh work directory is /data/data/com.termux/files/home/nbtransh/"
-echo "Please donot remove it."
+echo "· The nbtransh work directory is /data/data/com.termux/files/home/nbtransh/"
+echo "  Please donot remove it."
+echo "· To source the alias,run `source ~/.bashrc`"
