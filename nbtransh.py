@@ -85,7 +85,9 @@ def main():
     while True:
         rich.print(f"[green]In [{counter}]: [/green]", end="")
         stdin = input()
-        if stdin=="exit()":
+        if stdin=="" or stdin.isspace():
+            print("\n", end="")
+        elif stdin=="exit()":
             break
         elif stdin=="copyright":
             ShowCopyright()
