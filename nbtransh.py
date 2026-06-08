@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 HELP = """Cmd syntax:
 text --from_lang>to_lang
 
@@ -30,9 +31,10 @@ In[1]: Hello world! --en>zh
 
 Language labels:
 zh=Simplified Chinese
-en=English
 zh-TW=Traditional Chinese
-yve=Cantonese
+yue=Cantonese
+en=English
+ja=Japanese
 ko=Korean
 fr=French
 es=Spanish
@@ -40,29 +42,145 @@ it=Italian
 nl=Netherlands
 tr=Turkey
 hi=Hindi
-th=thai
+th=Thai
 el=Greek
 sv=Swedish
 fi=Finland
 cs=Czech
 ro=Romanian
-ja=Japanese
+pt=Portuguese
+de=German
+ru=Russian
+
+Dictionary commands:
+%dictionary generate          - Create an empty dictionary
+%dictionary add <word> <lang> <trans> - Add translation
+%dictionary list              - Show all entries
+%dictionary show <word>       - Show translations of a word
+%dictionary remove <word>     - Remove a word
+%dictionary clear             - Clear all entries
 """
-__version__ = "0.1.0"
+__version__ = "0.2.0"
+import os
+import sys
+import json
+import platform
+from datetime import datetime
+from pathlib import Path
+try:
+    from translate import Translator
+except ImportError:
+    print("Error: 'translate' module not installed.")
+    print("Run: pip install translate")
+    sys.exit(1)
+try:
+    import rich
+except ImportError:
+    class RichFallback:
+        @staticmethod
+        def print(*args, **kwargs):
+            builtins_print = __builtins__.get('print') if isinstance(__builtins__, dict) else print
+            builtins_print(*args)
+    rich = RichFallback()
+def get_dict_path():
+    """Get dictionary file path (same directory as script)"""
+    return Path(__file__).parent / "dictionary.json"
+def LoadDictionary():
+    """Load dictionary from JSON file"""
+    dict_path = get_dict_path()
+    if dict_path.exists() and dict_path.stat().st_size>0:
+        try:
+            with open(dict_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print("Warning: Dictionary file is corrupted. Creating new one.\n")
+            return {}
+    return {}
+def SaveDictionary(dictionary):
+    """Save dictionary to JSON file"""
+    dict_path = get_dict_path()
+    with open(dict_path, 'w', encoding='utf-8') as f:
+        json.dump(dictionary, f, indent=2, ensure_ascii=False)
+def GenerateDictionary():
+    """Create an empty dictionary file if not exists"""
+    dict_path = get_dict_path()
+    if dict_path.exists() and dict_path.stat().st_size>0:
+        print("Json file `dictionary.json` already exists.\n")
+    else:
+        with open(dict_path, 'w', encoding='utf-8') as f:
+            json.dump({}, f)
+        print("Created a json file `dictionary.json`.\n")
+def AddDictionaryEntry(word, lang, translation):
+    """Add or update a translation entry"""
+    dictionary = LoadDictionary()
+    if word not in dictionary:
+        dictionary[word] = {}
+    dictionary[word][lang] = translation
+    SaveDictionary(dictionary)
+    print(f"Added: {word} ({lang}) -> {translation}\n")
+def RemoveDictionaryEntry(word):
+    """Remove a word from dictionary"""
+    dictionary = LoadDictionary()
+    if word in dictionary:
+        del dictionary[word]
+        SaveDictionary(dictionary)
+        print(f"Removed: {word}\n")
+    else:
+        print(f"Word '{word}' not found in dictionary.\n")
+def ClearDictionary():
+    """Clear all dictionary entries"""
+    SaveDictionary({})
+    print("Dictionary cleared.\n")
+def ListDictionary():
+    """List all dictionary entries"""
+    dictionary = LoadDictionary()
+    if dictionary:
+        for word, translations in dictionary.items():
+            trans_str = ", ".join([f"{lang}: {text}" for lang, text in translations.items()])
+            print(f"  {word} -> {trans_str}")
+        print()
+    else:
+        print("Dictionary is empty.\n")
+def ShowDictionaryEntry(word):
+    """Show translations of a specific word"""
+    dictionary = LoadDictionary()
+    if word in dictionary:
+        print(f"  {word}:")
+        for lang, trans in dictionary[word].items():
+            print(f"    {lang}: {trans}")
+        print()
+    else:
+        print(f"'{word}' not found in dictionary.\n")
+def TranslateWithDictionary(text, from_lang, to_lang):
+    """
+    Translate text using local dictionary first, then online API
+    """
+    dictionary = LoadDictionary()
+    if text in dictionary:
+        word_dict = dictionary[text]
+        if to_lang in word_dict:
+            return word_dict[to_lang]
+        if "en" in word_dict:
+            rich.print("[yellow](Language not found, using English fallback)[/yellow]")
+            return word_dict["en"]
+    try:
+        translator = Translator(from_lang=from_lang, to_lang=to_lang)
+        return translator.translate(text)
+    except Exception as e:
+        return f"[Translation Error: {e}]"
 class StdinError(Exception):
     pass
 class LanguageUnknownError(Exception):
     pass
-import rich
-from translate import Translator
-import platform
-from datetime import datetime
-python_version = platform.python_version()
-now = datetime.now()
-time = now.strftime("%Y-%m-%d %H:%M:%S")
-print(f"Python {python_version} ({time})")
-print("Type 'copyright' or 'license' for more information")
-print(f"Nbtransh {__version__} -- an interactive translator. Type '?' for help.\n")
+def ParseStdin(stdin: str):
+    """Parse input string into text, from_lang, to_lang"""
+    if "--" not in stdin:
+        raise StdinError("no '--' in your input")
+    text, lang_part = stdin.split(" --", 1)
+    if ">" not in lang_part:
+        raise LanguageUnknownError("language format error, expected: from>to")
+    from_lang, to_lang = lang_part.split(">", 1)
+    return text.strip(), from_lang.strip(), to_lang.strip()
 def ShowCopyright():
     print("Copyright (c) 2026 tc0512")
     print("All Rights Reserved.\n")
@@ -70,40 +188,96 @@ def ShowLicense():
     print(LICENSE)
 def ShowHelpText():
     print(HELP)
-def ParseStdin(stdin: str):
-    if "--" in stdin:
-        text, lang = stdin.split(" --", 1)
-    else:
-        raise StdinError("no '--' in your input")
-    if ">" in lang:
-        fromlang, tolang = lang.split(">")
-    else:
-        raise LanguageUnknownError("language is unknown")
-    return text.strip(), fromlang, tolang
 def main():
+    python_version = platform.python_version()
+    now = datetime.now()
+    time_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Python {python_version} ({time_str})")
+    print("Type 'copyright' or 'license' for more information")
+    print(f"Nbtransh {__version__} -- an interactive translator. Type '?' for help.\n")
+    
     counter = 1
+    
     while True:
         rich.print(f"[green]In [{counter}]: [/green]", end="")
-        stdin = input()
-        if stdin=="" or stdin.isspace():
-            print("\n", end="")
-        elif stdin=="exit()":
+        
+        try:
+            stdin = input()
+        except EOFError:
+            print("\n")
             break
-        elif stdin=="copyright":
+        except KeyboardInterrupt:
+            print("\n")
+            break
+        
+        # Empty line
+        if stdin == "" or stdin.isspace():
+            print()
+        
+        # Exit
+        elif stdin == "exit()":
+            break
+        
+        # Info commands
+        elif stdin == "copyright":
             ShowCopyright()
-        elif stdin=="license":
+        elif stdin == "license":
             ShowLicense()
-        elif stdin=="?":
+        elif stdin == "?":
             ShowHelpText()
+        
+        # Dictionary commands
+        elif stdin == "%dictionary generate":
+            GenerateDictionary()
+        
+        elif stdin.startswith("%dictionary add "):
+            parts = stdin.split()
+            if len(parts) >= 4:
+                word = parts[2]
+                lang = parts[3]
+                translation = " ".join(parts[4:]) if len(parts)>4 else ""
+                if not translation:
+                    translation = input("  Translation:  ").strip()
+                if translation:
+                    AddDictionaryEntry(word, lang, translation)
+                else:
+                    print("Translation cannot be empty.\n")
+            else:
+                print("Usage: %dictionary add <word> <lang> <translation>\n")
+        
+        elif stdin.startswith("%dictionary remove "):
+            word = stdin.split(" ", 2)[2]
+            RemoveDictionaryEntry(word)
+        
+        elif stdin == "%dictionary clear":
+            ClearDictionary()
+        
+        elif stdin == "%dictionary list":
+            ListDictionary()
+        
+        elif stdin.startswith("%dictionary show "):
+            word = stdin.split(" ", 2)[2]
+            ShowDictionaryEntry(word)
+        
+        elif stdin.startswith("%dictionary "):
+            print("Unknown dictionary command. Type '?' for help.\n")
+        
+        # Translation
         else:
             try:
-                text, fromlang, tolang = ParseStdin(stdin)
-                translator = Translator(from_lang=fromlang, to_lang=tolang)
-                print(translator.translate(text))
-                print("\n", end="")
+                text, from_lang, to_lang = ParseStdin(stdin)
+                result = TranslateWithDictionary(text, from_lang, to_lang)
+                print(result)
+                print()
+            except StdinError:
+                rich.print("[red]Error: Missing '--' separator. Use: text --en>zh[/red]\n")
+            except LanguageUnknownError:
+                rich.print("[red]Error: Invalid language format. Use: --en>zh[/red]\n")
             except Exception as e:
-                rich.print(f"[red]Error:{e}[/red]")
-                print("\n", end="")
-        counter+=1
-if __name__=="__main__":
+                rich.print(f"[red]Error: {e}[/red]\n")
+        
+        counter += 1
+
+
+if __name__ == "__main__":
     main()
