@@ -32,6 +32,13 @@ curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_f
 e.g.
 In[1]: Hello world! --en\>zh
 你好，世界。
+### 新功能: 字典
+```%dictionary generate``` 生成字典文件 (json) 
+```%dictionary add <单词> <语言> <翻译>``` 为词典添加单词
+```%dictionary list``` 列出所有字典中记录的单词
+```dictionary show <单词>``` 列出某个单词对应的所有翻译
+```dictionary remove <单词>``` 删除某个单词
+```dictionary clear``` 清空字典
 ### 语言标签
 | 语言 | 标签 |
 |-----|-----|
@@ -53,6 +60,9 @@ In[1]: Hello world! --en\>zh
 | `cs` | 捷克语 |
 | `ro` | 罗马语 |
 | `ja` | 日语 |
+| `ru` | 俄语 |
+| `de` | 德语 |
+| `pt` | 葡萄牙语 |
 
 ## 注意事项
 翻译来自境外第三方服务器, 请注意甄别
