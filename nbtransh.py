@@ -59,6 +59,9 @@ Dictionary commands:
 %dictionary show <word>       - Show translations of a word
 %dictionary remove <word>     - Remove a word
 %dictionary clear             - Clear all entries
+
+Show history:
+%history or %hist
 """
 __version__ = "0.2.0"
 import os
@@ -168,6 +171,17 @@ def TranslateWithDictionary(text, from_lang, to_lang):
         return translator.translate(text)
     except Exception as e:
         return f"[Translation Error: {e}]"
+def get_history_file_path():
+    """Get history file path (same directory as script)"""
+    return Path(__file__).parent / "history.txt"
+def CheckHistoryFile():
+    """Create an empty history file if not exists"""
+    history_file_path = get_history_file_path()
+    if history_file_path.exists() and history_file_path.stat().st_size>0:
+        pass
+    else:
+        with open(history_file_path, 'w', encoding='utf-8') as f:
+            f.write("")
 class StdinError(Exception):
     pass
 class LanguageUnknownError(Exception):
@@ -192,6 +206,7 @@ def main():
     python_version = platform.python_version()
     now = datetime.now()
     time_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    CheckHistoryFile()
     print(f"Python {python_version} ({time_str})")
     print("Type 'copyright' or 'license' for more information")
     print(f"Nbtransh {__version__} -- an interactive translator. Type '?' for help.\n")
@@ -199,6 +214,8 @@ def main():
     counter = 1
     
     while True:
+        now = datetime.now()
+        time_str = now.strftime("%Y-%m-%d %H:%M:%S")
         rich.print(f"[green]In [{counter}]: [/green]", end="")
         
         try:
@@ -262,6 +279,12 @@ def main():
         elif stdin.startswith("%dictionary "):
             print("Unknown dictionary command. Type '?' for help.\n")
         
+        # History
+        elif stdin=="%history" or stdin=="%hist":
+            with open(get_history_file_path(), 'r', encoding='utf-8') as f:
+                print(f.read())
+            print()
+        
         # Translation
         else:
             try:
@@ -276,6 +299,10 @@ def main():
             except Exception as e:
                 rich.print(f"[red]Error: {e}[/red]\n")
         
+        # Write into history file
+        with open(get_history_file_path(), 'a', encoding='utf-8') as f:
+            f.write(f"[{time_str}] {stdin}\n")
+
         counter += 1
 
 
