@@ -4,23 +4,23 @@ python交互式翻译器
 ## 下载
 ### Windows PowerShell
 ```powershell
-curl -O https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_for_windows.ps1
-# 方法1：右键 PowerShell 以管理员身份运行，然后执行
+curl -O https://github.com/tc0512/nbtransh/releases/download/v0.3.0/install_for_windows.ps1
+# 右键 PowerShell 以管理员身份运行，然后执行
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\install_for_windows.ps1
 ```
 ### Linux
 ```bash
-curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_for_linux.sh | bash
+curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.3.0/install_for_linux.sh | bash
 ```
 ### MacOs
 ```zsh
-curl -O https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_for_MacOs.sh
+curl -O https://github.com/tc0512/nbtransh/releases/download/v0.3.0/install_for_MacOs.sh
 ./install_for_MacOs.sh
 ```
 ### Termux on Android
 ```bash
-curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_for_termux_on_android.sh
+curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.3.0/install_for_termux_on_android.sh | bash
 ```
 
 ## 使用方法
@@ -32,7 +32,7 @@ curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v0.1.0/install_f
 e.g.
 In[1]: Hello world! --en\>zh
 你好，世界。
-### 新功能: 字典
+### 字典
 ```%dictionary generate``` 生成字典文件 (json) 
 ```%dictionary add <单词> <语言> <翻译>``` 为词典添加单词
 ```%dictionary list``` 列出所有字典中记录的单词
@@ -63,6 +63,8 @@ In[1]: Hello world! --en\>zh
 | `ru` | 俄语 |
 | `de` | 德语 |
 | `pt` | 葡萄牙语 |
+### 历史记录
+`%history` 或 `%hist`
 
 ## 注意事项
 翻译来自境外第三方服务器, 请注意甄别
