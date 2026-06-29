@@ -85,6 +85,23 @@ except ImportError:
             builtins_print = __builtins__.get('print') if isinstance(__builtins__, dict) else print
             builtins_print(*args)
     rich = RichFallback()
+
+# ===== 新增：加载配置 =====
+CONFIG_FILE = Path(__file__).parent / "settings.json"
+
+def load_config():
+    """加载配置文件，不存在则创建默认"""
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+CONFIG = load_config()
+# ===== 新增结束 =====
+
 def get_dict_path():
     """Get dictionary file path (same directory as script)"""
     return Path(__file__).parent / "dictionary.json"
@@ -216,8 +233,12 @@ def main():
     while True:
         now = datetime.now()
         time_str = now.strftime("%Y-%m-%d %H:%M:%S")
-        rich.print(f"[green]In [{counter}]: [/green]", end="")
-        
+
+        theme = CONFIG.get("theme", "IPython")
+        if theme=="IPython":
+            rich.print(f"[green]In [{counter}]: [/green]", end="")
+        else:
+            print("> ", end="")
         try:
             stdin = input()
         except EOFError:
