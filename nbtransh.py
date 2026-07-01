@@ -113,7 +113,7 @@ def LoadDictionary():
             with open(dict_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except json.JSONDecodeError:
-            print("Warning: Dictionary file is corrupted. Creating new one.\n")
+            rich.print("[yellow]Warning: Dictionary file is corrupted. Creating new one.\n[/yellow]")
             return {}
     return {}
 def SaveDictionary(dictionary):
@@ -210,7 +210,7 @@ def ParseStdin(stdin: str):
         raise StdinError("no '--' in your input")
     text, lang_part = stdin.split(" --", 1)
     if ">" not in lang_part:
-        rich.print("[yellow]Warning:Target language is missing,using the configuration in `settings.json` instead.[/yellow]")
+        rich.print("[yellow]Warning: Target language is missing,using the configuration in `settings.json` instead.[/yellow]")
         from_lang = lang_part.strip()
         to_lang = CONFIG.get("auto_target_lang", "en")
     else:
