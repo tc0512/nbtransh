@@ -184,7 +184,8 @@ def TranslateWithDictionary(text, from_lang, to_lang):
             rich.print("[yellow](Language not found, using English fallback)[/yellow]")
             return word_dict["en"]
     try:
-        translator = Translator(from_lang=from_lang, to_lang=to_lang)
+        provider = CONFIG.get("provider", "mymemory")
+        translator = Translator(from_lang=from_lang, to_lang=to_lang, provider=provider)
         return translator.translate(text)
     except Exception as e:
         return f"[Translation Error: {e}]"
@@ -209,8 +210,11 @@ def ParseStdin(stdin: str):
         raise StdinError("no '--' in your input")
     text, lang_part = stdin.split(" --", 1)
     if ">" not in lang_part:
-        raise LanguageUnknownError("language format error, expected: from>to")
-    from_lang, to_lang = lang_part.split(">", 1)
+        rich.print("[yellow]Warning:Target language is missing,using the configuration in `settings.json` instead.[/yellow]")
+        from_lang = lang_part.strip()
+        to_lang = CONFIG.get("auto_target_lang", "en")
+    else:
+        from_lang, to_lang = lang_part.split(">", 1)
     return text.strip(), from_lang.strip(), to_lang.strip()
 def ShowCopyright():
     print("Copyright (c) 2026 tc0512")

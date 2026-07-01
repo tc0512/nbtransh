@@ -1,5 +1,5 @@
 {
-  "provider": "MyMemory",
-  "theme": "Simple",
-  "auto_target_lang": "English"
+  "provider": "mymemory",
+  "theme": "simple",
+  "auto_target_lang": "en"
 }
