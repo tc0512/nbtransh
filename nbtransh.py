@@ -69,7 +69,7 @@ Change settings:
 %set theme <theme>               - Change the theme(IPython or simple)
 %set auto_target_lang <language> - Change the target language
 """
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 import os
 import sys
 import json
