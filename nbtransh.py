@@ -53,15 +53,21 @@ de=German
 ru=Russian
 
 Dictionary commands:
-%dictionary generate          - Create an empty dictionary
+%dictionary generate                  - Create an empty dictionary
 %dictionary add <word> <lang> <trans> - Add translation
-%dictionary list              - Show all entries
-%dictionary show <word>       - Show translations of a word
-%dictionary remove <word>     - Remove a word
-%dictionary clear             - Clear all entries
+%dictionary list                      - Show all entries
+%dictionary show <word>               - Show translations of a word
+%dictionary remove <word>             - Remove a word
+%dictionary clear                     - Clear all entries
 
 Show history:
 %history or %hist
+
+Change settings:
+%set show                        - Show the configurations
+%set provider <API>              - Change the translate API
+%set theme <theme>               - Change the theme(IPython or simple)
+%set auto_target_lang <language> - Change the target language
 """
 __version__ = "0.3.0"
 import os
@@ -303,7 +309,31 @@ def main():
         
         elif stdin.startswith("%dictionary "):
             print("Unknown dictionary command. Type '?' for help.\n")
-        
+
+        # Settings commands
+        elif stdin == "%set show":
+            for k, v in CONFIG.items():
+                print(f"  {k}: {v}")
+            print()
+        elif stdin.startswith("%set "):
+            parts = stdin.split()
+            if len(parts) < 3:
+                print("Usage: %set <key> <value>\n")
+                continue
+            key = parts[1]
+            value = " ".join(parts[2:])  # 值可能有空格
+            valid_keys = ["provider", "theme", "auto_target_lang"]
+            if key not in valid_keys:
+                print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
+                continue
+            if key == "theme" and value not in ["IPython", "simple"]:
+                print(f"Invalid theme: {value}. Valid: IPython, simple\n")
+                continue
+            CONFIG[key] = value
+            with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+                json.dump(CONFIG, f, indent=2, ensure_ascii=False)
+
+    
         # History
         elif stdin=="%history" or stdin=="%hist":
             with open(get_history_file_path(), 'r', encoding='utf-8') as f:
