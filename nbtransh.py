@@ -24,7 +24,8 @@ SOFTWARE.
 
 HELP = """Cmd syntax:
 text --from_lang>to_lang
-
+if you wrote the text in a `.txt` file,you can also run
+$file_name --from_lang>to_lang
 For example:
 In[1]: Hello world! --en>zh
 你好，世界。
@@ -215,6 +216,15 @@ def ParseStdin(stdin: str):
     if "--" not in stdin:
         raise StdinError("no '--' in your input")
     text, lang_part = stdin.split(" --", 1)
+    if text.strip().startswith("$"):
+        file_name = text.strip()[1:]
+        try:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                text = f.read().strip()
+        except FileNotFoundError:
+            rich.print("[red]Error: File not found.[/red]")
+        except Exception as e:
+            rich.print(f"[red]Error: {e}[/red]")
     if ">" not in lang_part:
         rich.print("[yellow]Warning: Target language is missing,using the configuration in `settings.json` instead.[/yellow]")
         from_lang = lang_part.strip()
