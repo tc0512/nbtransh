@@ -92,6 +92,12 @@ except ImportError:
             builtins_print = __builtins__.get('print') if isinstance(__builtins__, dict) else print
             builtins_print(*args)
     rich = RichFallback()
+try:
+    if platform.system()=="Linux" or platform.system()=="Darwin":
+        import readline
+    elif platform.system()=="Windows":
+        import pyreadline as readline
+except ImportError:
 
 # ===== 新增：加载配置 =====
 CONFIG_FILE = Path(__file__).parent / "settings.json"
