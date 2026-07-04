@@ -77,6 +77,7 @@ import json
 import platform
 from datetime import datetime
 from pathlib import Path
+import atexit
 try:
     from translate import Translator
 except ImportError:
@@ -93,12 +94,15 @@ except ImportError:
             builtins_print(*args)
     rich = RichFallback()
 try:
-    if platform.system()=="Linux" or platform.system()=="Darwin":
+    if platform.system()=="Linux" or platform.system()=="Darwin" or platform.system=="Android":
         import readline
     elif platform.system()=="Windows":
         import pyreadline as readline
 except ImportError:
-
+    print("Error: no module named 'readline'")
+    print("(*) If your system is Windows, please run 'pip install pyreadline' to install it.")
+    print("(*) Else,check your python is or is not full installed.")
+    sys.exit(1)
 # ===== 新增：加载配置 =====
 CONFIG_FILE = Path(__file__).parent / "settings.json"
 
@@ -245,11 +249,18 @@ def ShowLicense():
     print(LICENSE)
 def ShowHelpText():
     print(HELP)
+def LoadHistory():
+    histfile = os.path.join(get_history_file_path())
+    readline.read_history_file(histfile)
+    readline.set_history_length(550)
+    readline.parse_and_bind("tab: complete")
+    atexit.register(readline.write_history_file, get_history_file_path())
 def main():
     python_version = platform.python_version()
     now = datetime.now()
     time_str = now.strftime("%Y-%m-%d %H:%M:%S")
     CheckHistoryFile()
+    LoadHistory()
     print(f"Python {python_version} ({time_str})")
     print("Type 'copyright' or 'license' for more information")
     print(f"Nbtransh {__version__} -- an interactive translator. Type '?' for help.\n")
@@ -369,10 +380,6 @@ def main():
                 rich.print("[red]Error: Invalid language format. Use: --en>zh[/red]\n")
             except Exception as e:
                 rich.print(f"[red]Error: {e}[/red]\n")
-        
-        # Write into history file
-        with open(get_history_file_path(), 'a', encoding='utf-8') as f:
-            f.write(f"[{time_str}] {stdin}\n")
 
         counter += 1
 
