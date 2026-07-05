@@ -47,7 +47,7 @@ try {
 
 # 4. 安装 Python 依赖
 Write-Host "[4/5] 安装 Python 依赖..." -ForegroundColor Green
-$packages = @("translate", "rich", "lxml", "beautifulsoup4", "requests")
+$packages = @("translate", "rich", "lxml", "pyreadline", "requests")
 $mirrors = @(
     "https://pypi.tuna.tsinghua.edu.cn/simple/",
     "https://mirrors.aliyun.com/pypi/simple/",
