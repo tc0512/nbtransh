@@ -70,7 +70,7 @@ In[1]: Hello world! --en\>zh
 ```%set provider <API服务器>``` 更改API
 ```%set auto_target_lang <目标语言>``` 更改默认目标语言
 ```%set theme simple/IPython``` 主题设置: 朴素风格/IPython
+```%set max_history_length <最大历史长度>``` 最大历史长度
 
 ## 注意事项
-1. 翻译来自境外第三方服务器, 请注意甄别
-2. 跨会话历史已取消, 单次会话保存历史最多550条
+翻译来自境外第三方服务器, 请注意甄别

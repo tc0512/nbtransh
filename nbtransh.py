@@ -69,6 +69,7 @@ Change settings:
 %set provider <API>              - Change the translate API
 %set theme <theme>               - Change the theme(IPython or simple)
 %set auto_target_lang <language> - Change the target language
+%set max_history_length <number> - Change the max history length
 """
 __version__ = "0.6.0"
 import os
@@ -250,9 +251,10 @@ def ShowLicense():
 def ShowHelpText():
     print(HELP)
 def LoadHistory():
+    max_history_length = CONFIG.get("max_history_length", 550)
     histfile = os.path.join(get_history_file_path())
     readline.read_history_file(histfile)
-    readline.set_history_length(550)
+    readline.set_history_length(max_history_length)
     readline.parse_and_bind("tab: complete")
     atexit.register(readline.write_history_file, get_history_file_path())
 def main():
@@ -349,7 +351,7 @@ def main():
                 continue
             key = parts[1]
             value = " ".join(parts[2:])  # 值可能有空格
-            valid_keys = ["provider", "theme", "auto_target_lang"]
+            valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length"]
             if key not in valid_keys:
                 print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
                 continue
