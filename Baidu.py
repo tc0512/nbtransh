@@ -20,6 +20,6 @@ def baidu_translate(text, from_lang, to_lang, appid, secret):
     result = resp.json()
 
     if 'trans_result' in result:
-        return result['trans_result'][0]['dst']
+        return '\n'.join([item['dst'] for item in result['trans_result']])
     else:
         return f"Failed to translate: {result}"
