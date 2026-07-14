@@ -203,6 +203,18 @@ def TranslateWithDictionary(text, from_lang, to_lang):
             return word_dict["en"]
     try:
         provider = CONFIG.get("provider", "mymemory")
+        if provider=="baidu":
+            appid, secret = CONFIG["appid"], CONFIG["secret"]
+            baidu_trans_script_path = str(Path(__file__).parent / "Baidu.py")
+            with open(baidu_trans_script_path, 'a', encoding='utf-8') as f:
+                f.write(f"print({text}, {from_lang}, {to_lang}, {appid}, {secret})")
+            subprocess.run(['python', baidu_trans_script_path])
+            with open(baidu_trans_script_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            if lines:
+                lines.pop()
+                with open(baidu_trans_script_path, 'w', encoding='utf-8') as f:
+                    f.writelines(lines)
         translator = Translator(from_lang=from_lang, to_lang=to_lang, provider=provider)
         return translator.translate(text)
     except Exception as e:
@@ -351,7 +363,7 @@ def main():
                 continue
             key = parts[1]
             value = " ".join(parts[2:])  # 值可能有空格
-            valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length"]
+            valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length", "appid", "secret"]
             if key not in valid_keys:
                 print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
                 continue
