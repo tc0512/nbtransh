@@ -27,7 +27,7 @@ fi
 echo ""
 
 # 1. 检查 Command Line Tools
-echo -e "[1/6] 检查 Xcode Command Line Tools..."
+echo -e "[1/7] 检查 Xcode Command Line Tools..."
 
 if ! xcode-select -p &>/dev/null; then
     echo -e "${YELLOW}⚠ Xcode Command Line Tools 未安装，正在安装...${NC}"
@@ -40,7 +40,7 @@ fi
 echo ""
 
 # 2. 检查/安装 Homebrew
-echo -e "[2/6] 检查 Homebrew..."
+echo -e "[2/7] 检查 Homebrew..."
 
 if ! command -v brew &>/dev/null; then
     echo -e "${YELLOW}⚠ Homebrew 未安装，正在安装...${NC}"
@@ -61,7 +61,7 @@ fi
 echo ""
 
 # 3. 安装 Python
-echo -e "[3/6] 检查 Python..."
+echo -e "[3/7] 检查 Python..."
 
 if ! command -v python3 &>/dev/null; then
     echo -e "${YELLOW}⚠ Python 未安装，正在安装...${NC}"
@@ -73,7 +73,7 @@ fi
 echo ""
 
 # 4. 安装 pip 依赖
-echo -e "[4/6] 安装 Python 依赖包..."
+echo -e "[4/7] 安装 Python 依赖包..."
 
 # 升级 pip
 pip3 install --upgrade pip -q
@@ -90,7 +90,7 @@ echo -e "${GREEN}✓ 所有依赖安装完成${NC}"
 echo ""
 
 # 5. 克隆仓库
-echo -e "[5/6] 下载 nbtransh..."
+echo -e "[5/7] 下载 nbtransh..."
 
 REPO_PATH="$HOME/nbtransh"
 
@@ -109,8 +109,19 @@ fi
 echo -e "${GREEN}✓ 下载完成${NC}"
 echo ""
 
-# 6. 创建启动脚本
-echo -e "[6/6] 创建快捷启动..."
+# 6. 写入默认配置
+echo -e "[6/7] 写入默认配置..."
+cat > "$REPO_PATH/settings.json" << EOF
+{
+  "provider": "mymemory",
+  "theme": "IPython",
+  "auto_target_lang": "en",
+  "max_history_length": 550
+}
+EOF
+
+# 7. 创建启动脚本
+echo -e "[7/7] 创建快捷启动..."
 
 # 创建可执行启动脚本
 cat > "$REPO_PATH/run.sh" << EOF

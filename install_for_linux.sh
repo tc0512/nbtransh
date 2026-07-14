@@ -6,8 +6,9 @@ if command -v apt >/dev/null 2>&1; then
     echo "✓ Detected: Linux"
 else
     echo "::error::This script is not support this platform"
+    exit 1
 fi
-echo -e "\033[33m[1/4] Install packages in isolated environment\033[0m"
+echo -e "\033[33m[1/5] Install packages in isolated environment\033[0m"
 if command -v python >/dev/null 2>&1; then
     echo "Python is already installed"
 else
@@ -22,7 +23,7 @@ else
     apt update -y &>/dev/null
     apt install -y git 2>/dev/null 1>/dev/null
 fi
-echo -e "\033[33m[2/4] Install runtime dependencies\033[0m"
+echo -e "\033[33m[2/5] Install runtime dependencies\033[0m"
 if pip show translate &>/dev/null; then
     echo "translate is already installed"
 else
@@ -35,12 +36,21 @@ else
     echo "rich is not installed,so install it"
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ rich
 fi
-echo -e "\033[33m[3/4] Clone repository\033[0m"
+echo -e "\033[33m[3/5] Clone repository\033[0m"
 cd ~
 rm -rf nbtransh
 git clone https://github.com/tc0512/nbtransh.git
 rm nbtransh/*.sh
-echo -e "\033[33m[4/4] Set alias to launch faster\033[0m"
+echo -e "\033[33m[4/5] Write into config file\033[0m"
+cat > $HOME/nbtransh/settings.json << 'EOF'
+{
+  "provider": "mymemory",
+  "theme": "IPython",
+  "auto_target_lang": "en",
+  "max_history_length": 550
+}
+EOF
+echo -e "\033[33m[5/5] Set alias to launch faster\033[0m"
 echo "alias nbtransh='python $HOME/nbtransh/nbtransh.py'" >> .bashrc
 echo -e "\033[33mAll done!\033[0m"
 echo "· The nbtransh work directory is $HOME/nbtransh"

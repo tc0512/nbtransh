@@ -9,7 +9,7 @@ Write-Host ""
 $ErrorActionPreference = "Stop"
 
 # 1. 检查 Python
-Write-Host "[1/5] 检查 Python 环境..." -ForegroundColor Green
+Write-Host "[1/6] 检查 Python 环境..." -ForegroundColor Green
 try {
     $pyCmd = Get-Command python -ErrorAction Stop
     $pyVersion = & $pyCmd --version 2>&1
@@ -23,7 +23,7 @@ try {
 }
 
 # 2. 检查 pip
-Write-Host "[2/5] 检查 pip..." -ForegroundColor Green
+Write-Host "[2/6] 检查 pip..." -ForegroundColor Green
 try {
     $pipCmd = Get-Command pip -ErrorAction Stop
     Write-Host "      ✓ 已找到 pip" -ForegroundColor Green
@@ -33,7 +33,7 @@ try {
 }
 
 # 3. 检查 Git
-Write-Host "[3/5] 检查 Git..." -ForegroundColor Green
+Write-Host "[3/6] 检查 Git..." -ForegroundColor Green
 try {
     $gitCmd = Get-Command git -ErrorAction Stop
     $gitVersion = & $gitCmd --version 2>&1
@@ -46,7 +46,7 @@ try {
 }
 
 # 4. 安装 Python 依赖
-Write-Host "[4/5] 安装 Python 依赖..." -ForegroundColor Green
+Write-Host "[4/6] 安装 Python 依赖..." -ForegroundColor Green
 $packages = @("translate", "rich", "lxml", "pyreadline", "requests")
 $mirrors = @(
     "https://pypi.tuna.tsinghua.edu.cn/simple/",
@@ -77,7 +77,7 @@ foreach ($pkg in $packages) {
 }
 
 # 5. 克隆仓库
-Write-Host "[5/5] 下载 nbtransh..." -ForegroundColor Green
+Write-Host "[5/6] 下载 nbtransh..." -ForegroundColor Green
 $repoPath = "$env:USERPROFILE\nbtransh"
 if (Test-Path $repoPath) {
     Write-Host "      目录已存在，删除旧版本..." -ForegroundColor Yellow
@@ -91,14 +91,25 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "      ✓ 下载完成" -ForegroundColor Green
 
-# 6. 创建启动脚本（桌面快捷方式）
+# 6. 写入默认配置
+Write-Host "[6/6] 写入默认配置" -ForegroundColor Green
+@"
+{
+  "provider": "mymemory",
+  "theme": "IPython",
+  "auto_target_lang": "en",
+  "max_history_length": 550
+}
+"@ > $repoPath/settings.json
+
+# 7. 创建启动脚本（桌面快捷方式）
 Write-Host "      创建桌面快捷方式..." -ForegroundColor Yellow
 $batchPath = "$env:USERPROFILE\Desktop\nbtransh.bat"
 $batchContent = "@echo off`ncd /d `"$repoPath`"`npython nbtransh.py`npause"
 Set-Content -Path $batchPath -Value $batchContent -Encoding ASCII
 Write-Host "      ✓ 桌面快捷方式已创建: nbtransh.bat" -ForegroundColor Green
 
-# 7. 创建启动脚本（终端快捷方式）
+# 8. 创建启动脚本（终端快捷方式）
 Write-Host "      创建终端启动脚本..." -ForegroundColor Yellow
 $ps1Path = "$env:USERPROFILE\Desktop\nbtransh.ps1"
 $ps1Content = "cd `"$repoPath`"`npython nbtransh.py`nRead-Host '按 Enter 键退出...'"
