@@ -216,8 +216,9 @@ def TranslateWithDictionary(text, from_lang, to_lang):
                 lines.pop()
                 with open(baidu_trans_script_path, 'w', encoding='utf-8') as f:
                     f.writelines(lines)
-        translator = Translator(from_lang=from_lang, to_lang=to_lang, provider=provider)
-        return translator.translate(text)
+        else:
+            translator = Translator(from_lang=from_lang, to_lang=to_lang, provider=provider)
+            return translator.translate(text)
     except Exception as e:
         return f"[Translation Error: {e}]"
 def get_history_file_path():
