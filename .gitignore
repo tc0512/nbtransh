@@ -222,3 +222,6 @@ dictionary.json
 
 #Nbtransh history
 history.txt
+
+#Nbtransh configure file(private information in it)
+settings.json
