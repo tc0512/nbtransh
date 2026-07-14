@@ -79,6 +79,7 @@ import platform
 from datetime import datetime
 from pathlib import Path
 import atexit
+import subprocess
 try:
     from translate import Translator
 except ImportError:
@@ -207,7 +208,7 @@ def TranslateWithDictionary(text, from_lang, to_lang):
             appid, secret = CONFIG["appid"], CONFIG["secret"]
             baidu_trans_script_path = str(Path(__file__).parent / "Baidu.py")
             with open(baidu_trans_script_path, 'a', encoding='utf-8') as f:
-                f.write(f"print({text}, {from_lang}, {to_lang}, {appid}, {secret})")
+                f.write(f"print(baidu_translate('{text}', '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
             subprocess.run(['python', baidu_trans_script_path])
             with open(baidu_trans_script_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
