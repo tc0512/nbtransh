@@ -29,6 +29,14 @@ $file_name --from_lang>to_lang
 For example:
 In[1]: Hello world! --en>zh
 你好，世界。
+Long text:
+In[2]: %begin long
+  ...: 这是一段长文本
+  ...: 需要换行处理
+  ...: %end long
+  ...: --zh>en
+This is a paragraph of long text.
+Needs line break to handle.
 
 Language labels:
 zh=Simplified Chinese
@@ -295,6 +303,8 @@ def main():
             print("> ", end="")
         try:
             stdin = input()
+            if stdin.strip()=="%begin long":
+                # 长文本
         except EOFError:
             print("\n")
             break
