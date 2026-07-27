@@ -31,10 +31,11 @@ In[1]: Hello world! --en>zh
 你好，世界。
 Long text:
 In[2]: %begin long
-  ...: 这是一段长文本
-  ...: 需要换行处理
-  ...: %end long
-  ...: --zh>en
+Enter multiple lines of content(Enter %end to finish)...
+这是一段长文本
+需要换行处理
+%end
+Now enter language direction(such as --zh>en): --en>zh
 This is a paragraph of long text.
 Needs line break to handle.
 
@@ -216,7 +217,7 @@ def TranslateWithDictionary(text, from_lang, to_lang):
             appid, secret = CONFIG["appid"], CONFIG["secret"]
             baidu_trans_script_path = str(Path(__file__).parent / "Baidu.py")
             with open(baidu_trans_script_path, 'a', encoding='utf-8') as f:
-                f.write(f"print(baidu_translate('{text}', '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
+                f.write(f"print(baidu_translate('{repr(text)}', '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
             result = subprocess.check_output(['python', baidu_trans_script_path], encoding='utf-8')
             with open(baidu_trans_script_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
@@ -297,47 +298,97 @@ def main():
         time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
         theme = CONFIG.get("theme", "IPython")
-        if theme=="IPython":
+        if theme == "IPython":
             rich.print(f"[green]In [{counter}]: [/green]", end="")
         else:
             print("> ", end="")
+
         try:
             stdin = input()
-            if stdin.strip()=="%begin long":
-                # 长文本
         except EOFError:
             print("\n")
             break
         except KeyboardInterrupt:
             print("\n")
             break
-        
-        # Empty line
+
+        # ===== 长文本处理 =====
+        if stdin.strip() == "%begin long":
+            print("Enter multiple lines of content(Enter %end to finish)...")
+            lines = []
+            while True:
+                try:
+                    line = input()
+                except EOFError:
+                    break
+                if line.strip() == "%end":
+                    break
+                lines.append(line)
+            long_text = "\n".join(lines)
+            if not long_text.strip():
+                rich.print("[yellow]Warning: No texts were entered.[/yellow]")
+                counter += 1
+                continue
+            print("Now enter language direction(such as --zh>en):", end="")
+            try:
+                lang_input = input().strip()
+            except EOFError:
+                print()
+                counter += 1
+                continue
+            if not lang_input:
+                rich.print("[yellow]Warning: language direction is missing,use the configuration instead.[/yellow]")
+                lang_input = f"--{CONFIG.get('auto_target_lang', 'en')}"
+            try:
+                text, from_lang, to_lang = ParseStdin(f"{long_text} {lang_input}")
+                result = TranslateWithDictionary(text, from_lang, to_lang)
+                print(result)
+                print()
+            except StdinError:
+                rich.print("[red]Error: Missing '--' spreading symbol.Use --zh>en format.[/red]\n")
+            except LanguageUnknownError:
+                rich.print("[red]Error: Invalid language format.Use --zh>en format.[/red]\n")
+            except Exception as e:
+                rich.print(f"[red]Error: {e}[/red]\n")
+            counter += 1
+            continue
+
+        # ===== 空行 =====
         if stdin == "" or stdin.isspace():
             print()
-        
-        # Exit
-        elif stdin == "exit()":
+            counter += 1
+            continue
+
+        # ===== 退出 =====
+        if stdin == "exit()":
             break
-        
-        # Info commands
-        elif stdin == "copyright":
+
+        # ===== 信息命令 =====
+        if stdin == "copyright":
             ShowCopyright()
-        elif stdin == "license":
+            counter += 1
+            continue
+        if stdin == "license":
             ShowLicense()
-        elif stdin == "?":
+            counter += 1
+            continue
+        if stdin == "?":
             ShowHelpText()
-        
-        # Dictionary commands
-        elif stdin == "%dictionary generate":
+            counter += 1
+            continue
+
+        # ===== 字典命令 =====
+        if stdin == "%dictionary generate":
             GenerateDictionary()
-        
-        elif stdin.startswith("%dictionary add "):
+            counter += 1
+            continue
+
+        if stdin.startswith("%dictionary add "):
             parts = stdin.split()
             if len(parts) >= 4:
                 word = parts[2]
                 lang = parts[3]
-                translation = " ".join(parts[4:]) if len(parts)>4 else ""
+                translation = " ".join(parts[4:]) if len(parts) > 4 else ""
                 if not translation:
                     translation = input("  Translation:  ").strip()
                 if translation:
@@ -346,70 +397,88 @@ def main():
                     print("Translation cannot be empty.\n")
             else:
                 print("Usage: %dictionary add <word> <lang> <translation>\n")
-        
-        elif stdin.startswith("%dictionary remove "):
+            counter += 1
+            continue
+
+        if stdin.startswith("%dictionary remove "):
             word = stdin.split(" ", 2)[2]
             RemoveDictionaryEntry(word)
-        
-        elif stdin == "%dictionary clear":
+            counter += 1
+            continue
+
+        if stdin == "%dictionary clear":
             ClearDictionary()
-        
-        elif stdin == "%dictionary list":
+            counter += 1
+            continue
+
+        if stdin == "%dictionary list":
             ListDictionary()
-        
-        elif stdin.startswith("%dictionary show "):
+            counter += 1
+            continue
+
+        if stdin.startswith("%dictionary show "):
             word = stdin.split(" ", 2)[2]
             ShowDictionaryEntry(word)
-        
-        elif stdin.startswith("%dictionary "):
-            print("Unknown dictionary command. Type '?' for help.\n")
+            counter += 1
+            continue
 
-        # Settings commands
-        elif stdin == "%set show":
+        if stdin.startswith("%dictionary "):
+            print("Unknown dictionary command. Type '?' for help.\n")
+            counter += 1
+            continue
+
+        # ===== 设置命令 =====
+        if stdin == "%set show":
             for k, v in CONFIG.items():
                 print(f"  {k}: {v}")
             print()
-        elif stdin.startswith("%set "):
+            counter += 1
+            continue
+
+        if stdin.startswith("%set "):
             parts = stdin.split()
             if len(parts) < 3:
                 print("Usage: %set <key> <value>\n")
+                counter += 1
                 continue
             key = parts[1]
-            value = " ".join(parts[2:])  # 值可能有空格
+            value = " ".join(parts[2:])
             valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length", "appid", "secret"]
             if key not in valid_keys:
                 print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
+                counter += 1
                 continue
             if key == "theme" and value not in ["IPython", "simple"]:
                 print(f"Invalid theme: {value}. Valid: IPython, simple\n")
+                counter += 1
                 continue
             CONFIG[key] = value
             with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
                 json.dump(CONFIG, f, indent=2, ensure_ascii=False)
+            counter += 1
+            continue
 
-    
-        # History
-        elif stdin=="%history" or stdin=="%hist":
+        # ===== 历史命令 =====
+        if stdin == "%history" or stdin == "%hist":
             with open(get_history_file_path(), 'r', encoding='utf-8') as f:
                 print(f.read())
             print()
-        
-        # Translation
-        else:
-            try:
-                text, from_lang, to_lang = ParseStdin(stdin)
-                result = TranslateWithDictionary(text, from_lang, to_lang)
-                print(result)
-                print()
-            except StdinError:
-                rich.print("[red]Error: Missing '--' separator. Use: text --en>zh[/red]\n")
-            except LanguageUnknownError:
-                rich.print("[red]Error: Invalid language format. Use: --en>zh[/red]\n")
-            except Exception as e:
-                rich.print(f"[red]Error: {e}[/red]\n")
+            counter += 1
+            continue
+
+        # ===== 翻译 =====
+        try:
+            text, from_lang, to_lang = ParseStdin(stdin)
+            result = TranslateWithDictionary(text, from_lang, to_lang)
+            print(result)
+            print()
+        except StdinError:
+            rich.print("[red]Error: Missing '--' separator. Use: text --en>zh[/red]\n")
+        except LanguageUnknownError:
+            rich.print("[red]Error: Invalid language format. Use: --en>zh[/red]\n")
+        except Exception as e:
+            rich.print(f"[red]Error: {e}[/red]\n")
 
         counter += 1
-
-
 if __name__ == "__main__":
     main()
