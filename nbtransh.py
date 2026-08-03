@@ -80,7 +80,7 @@ Change settings:
 %set auto_target_lang <language> - Change the target language
 %set max_history_length <number> - Change the max history length
 """
-__version__ = "0.8.0"
+__version__ = "1.1.0"
 import os
 import sys
 import json
