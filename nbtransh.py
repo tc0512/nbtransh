@@ -217,7 +217,7 @@ def TranslateWithDictionary(text, from_lang, to_lang):
             appid, secret = CONFIG["appid"], CONFIG["secret"]
             baidu_trans_script_path = str(Path(__file__).parent / "Baidu.py")
             with open(baidu_trans_script_path, 'a', encoding='utf-8') as f:
-                f.write(f"print(baidu_translate('{repr(text)}', '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
+                f.write(f"print(baidu_translate({repr(text)}, '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
             result = subprocess.check_output(['python', baidu_trans_script_path], encoding='utf-8')
             with open(baidu_trans_script_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
