@@ -22,6 +22,15 @@ curl -O https://github.com/tc0512/nbtransh/releases/download/v1.1.0/install_for_
 ```bash
 curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v1.1.0/install_for_termux_on_android.sh | bash
 ```
+### iOS
+1. App Store下载UTM
+2. 访问链接下载Ubuntu纯命令行iso
+```text
+https://ubuntu.com/download/server/thank-you?version=26.04&architecture=arm64&lts=true
+```
+3. 打开UTM, 点加号, 点新建, 选择模拟, 操作系统Linux, 选择Ubuntu, 分配4GB的RAM, 选择你下载的iso文件
+4. 启动虚拟机, 一路点下一步
+5. 安装完成后重启进入系统
 
 ## 使用方法
 ### 基本信息
