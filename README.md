@@ -31,6 +31,7 @@ https://ubuntu.com/download/server/thank-you?version=26.04&architecture=arm64&lt
 3. 打开UTM, 点加号, 点新建, 选择模拟, 操作系统Linux, 选择Ubuntu, 分配4GB的RAM, 选择你下载的iso文件
 4. 启动虚拟机, 一路点下一步
 5. 安装完成后重启进入系统
+6. 运行Linux的安装脚本
 
 ## 使用方法
 ### 基本信息
