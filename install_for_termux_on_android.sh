@@ -43,7 +43,7 @@ cd ~
 rm -rf nbtransh
 git clone https://github.com/tc0512/nbtransh.git
 rm nbtransh/*.sh
-echo -e "\033[32m[4/5] Clone repository\033[0m"
+echo -e "\033[32m[4/5] Genetate default configure file\033[0m"
 cat > /data/data/com.termux/files/home/nbtransh/settings.json << 'EOF'
 {
   "provider": "mymemory",
@@ -52,9 +52,8 @@ cat > /data/data/com.termux/files/home/nbtransh/settings.json << 'EOF'
   "max_history_length": 550
 }
 EOF
-echo -e "\033[32m[5/5] Set alias to launch faster\033[0m"
-echo "alias nbtransh='python /data/data/com.termux/files/home/nbtransh/nbtransh.py'" >> .bashrc
+echo -e "\033[32m[5/5] Create symbolic link to launch faster\033[0m"
+ln -s /data/data/com.termux/files/home/nbtransh/nbtransh.py /data/data/com.termux/files/usr/bin/nbtransh
 echo -e "\033[32mAll done!\033[0m"
 echo "· The nbtransh work directory is /data/data/com.termux/files/home/nbtransh/"
 echo "  Please donot remove it."
-echo "· To source the alias,run 'source ~/.bashrc'"
