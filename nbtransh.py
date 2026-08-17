@@ -31,11 +31,10 @@ In[1]: Hello world! --en>zh
 你好，世界。
 Long text:
 In[2]: %begin long
-Enter multiple lines of content(Enter %end to finish)...
-这是一段长文本
-需要换行处理
-%end
-Now enter language direction(such as --zh>en): --en>zh
+  ...: 这是一段长文本
+  ...: 需要换行处理
+  ...: %end long
+  ...: --zh>en
 This is a paragraph of long text.
 Needs line break to handle.
 
@@ -80,7 +79,7 @@ Change settings:
 %set auto_target_lang <language> - Change the target language
 %set max_history_length <number> - Change the max history length
 """
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 import os
 import sys
 import json
@@ -314,22 +313,23 @@ def main():
 
         # ===== 长文本处理 =====
         if stdin.strip() == "%begin long":
-            print("Enter multiple lines of content(Enter %end to finish)...")
             lines = []
             while True:
                 try:
-                    line = input()
+                    tip_word = " "*len(str(counter))+"  "+"...:"+" " if CONFIG["theme"]=="IPython" else ""
+                    line = input(tip_word)
                 except EOFError:
                     break
-                if line.strip() == "%end":
+                if line.strip() == "%end long":
                     break
                 lines.append(line)
             long_text = "\n".join(lines)
             if not long_text.strip():
-                rich.print("[yellow]Warning: No texts were entered.[/yellow]")
+                print("No texts were entered.Skipping.")
+                print()
                 counter += 1
                 continue
-            print("Now enter language direction(such as --zh>en):", end="")
+            print(tip_word, end="")
             try:
                 lang_input = input().strip()
             except EOFError:
