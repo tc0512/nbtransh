@@ -247,24 +247,42 @@ class LanguageUnknownError(Exception):
     pass
 def ParseStdin(stdin: str):
     """Parse input string into text, from_lang, to_lang"""
-    if "--" not in stdin:
-        raise StdinError("no '--' in your input")
-    text, lang_part = stdin.split(" --", 1)
-    if text.strip().startswith("$"):
-        file_name = text.strip()[1:]
+    # 默认值
+    from_lang = CONFIG.get("auto_source_lang", "auto")
+    to_lang = CONFIG.get("auto_target_lang", "en")
+
+    # 1. 处理文件输入：以 $ 开头
+    if stdin.strip().startswith("$"):
+        file_name = stdin.strip()[1:].split(" --")[0]  # 提取文件名
         try:
             with open(file_name, 'r', encoding='utf-8') as f:
                 text = f.read().strip()
         except FileNotFoundError:
             rich.print("[red]Error: File not found.[/red]")
+            return None, None, None
         except Exception as e:
             rich.print(f"[red]Error: {e}[/red]")
-    if ">" not in lang_part:
-        rich.print("[yellow]Warning: Target language is missing,using the configuration in `settings.json` instead.[/yellow]")
-        from_lang = lang_part.strip()
-        to_lang = CONFIG.get("auto_target_lang", "en")
+            return None, None, None
+        # 如果文件内容包含 "--"，继续解析
+        stdin = text + " " + " ".join(stdin.split()[1:])
+
+    # 2. 分离 text 和 lang_part
+    if "--" in stdin:
+        text, lang_part = stdin.split(" --", 1)
+        # 解析语言部分
+        if ">" in lang_part:
+            from_lang, to_lang = lang_part.split(">", 1)
+            from_lang = from_lang.strip() or CONFIG.get("auto_source_lang", "zh")
+            to_lang = to_lang.strip() or CONFIG.get("auto_target_lang", "en")
+        else:
+            # 只有源语言，没有目标语言
+            from_lang = lang_part.strip()
+            to_lang = CONFIG.get("auto_target_lang", "en")
     else:
-        from_lang, to_lang = lang_part.split(">", 1)
+        # 没有 "--"，整个输入就是文本
+        text = stdin.strip()
+        # from_lang 和 to_lang 使用默认值
+
     return text.strip(), from_lang.strip(), to_lang.strip()
 def ShowCopyright():
     print("Copyright (c) 2026 tc0512")
