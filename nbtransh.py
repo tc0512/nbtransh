@@ -198,36 +198,57 @@ def ShowDictionaryEntry(word):
         print()
     else:
         print(f"'{word}' not found in dictionary.\n")
-def TranslateWithDictionary(text, from_lang, to_lang):
+def TranslateWithDictionary(text, from_lang="zh", to_lang="en"):
     """
-    Translate text using local dictionary first, then online API
+    翻译函数：
+    - 默认源语言：中文（zh）
+    - 默认目标语言：英文（en）
+    - 优先查本地词典，未命中再调在线 API
     """
+    # 1️⃣ 查本地词典
     dictionary = LoadDictionary()
     if text in dictionary:
         word_dict = dictionary[text]
         if to_lang in word_dict:
             return word_dict[to_lang]
         if "en" in word_dict:
-            rich.print("[yellow](Language not found, using English fallback)[/yellow]")
+            rprint("[yellow]WARNING:Target language is missing,using English fallback[/yellow]")
             return word_dict["en"]
+
+    # 2️⃣ 在线 API 配置
+    provider = CONFIG.get("provider", "mymemory")
+
     try:
-        provider = CONFIG.get("provider", "mymemory")
-        if provider=="baidu":
-            appid, secret = CONFIG["appid"], CONFIG["secret"]
-            baidu_trans_script_path = str(Path(__file__).parent / "Baidu.py")
-            with open(baidu_trans_script_path, 'a', encoding='utf-8') as f:
-                f.write(f"print(baidu_translate({repr(text)}, '{from_lang}', '{to_lang}', '{appid}', '{secret}'))")
-            result = subprocess.check_output(['python', baidu_trans_script_path], encoding='utf-8')
-            with open(baidu_trans_script_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-            if lines:
-                lines.pop()
-                with open(baidu_trans_script_path, 'w', encoding='utf-8') as f:
-                    f.writelines(lines)
-            return result.strip()
+        if provider == "baidu":
+            appid = CONFIG.get("appid")
+            secret = CONFIG.get("secret")
+            if not appid or not secret:
+                return "[Error] 百度翻译 appid/secret 未配置"
+
+            script_path = Path(__file__).parent / "Baidu.py"
+            result = subprocess.run(
+                [
+                    "python",
+                    str(script_path),
+                    text,
+                    from_lang,
+                    to_lang,
+                    appid,
+                    secret
+                ],
+                capture_output=True,
+                text=True,
+                check=False
+            )
+            if result.returncode != 0:
+                return f"[Translation Error] {result.stderr.strip()}"
+            return result.stdout.strip()
+
         else:
+            # 其他 provider（如 mymemory）
             translator = Translator(from_lang=from_lang, to_lang=to_lang, provider=provider)
             return translator.translate(text)
+
     except Exception as e:
         return f"[Translation Error: {e}]"
 def get_history_file_path():
