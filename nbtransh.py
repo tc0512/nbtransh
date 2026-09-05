@@ -269,7 +269,7 @@ class LanguageUnknownError(Exception):
 def ParseStdin(stdin: str):
     """Parse input string into text, from_lang, to_lang"""
     # 默认值
-    from_lang = CONFIG.get("auto_source_lang", "auto")
+    from_lang = CONFIG.get("auto_source_lang", "zh")
     to_lang = CONFIG.get("auto_target_lang", "en")
 
     # 1. 处理文件输入：以 $ 开头
