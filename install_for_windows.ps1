@@ -97,6 +97,7 @@ Write-Host "[6/6] 写入默认配置" -ForegroundColor Green
 {
   "provider": "mymemory",
   "theme": "IPython",
+  "auto_source_lang": "zh"
   "auto_target_lang": "en",
   "max_history_length": 550
 }
