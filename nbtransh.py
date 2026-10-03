@@ -76,10 +76,12 @@ Change settings:
 %set show                        - Show the configurations
 %set provider <API>              - Change the translate API
 %set theme <theme>               - Change the theme(IPython or simple)
+%set auto_source_lang <language> - Change the source language
 %set auto_target_lang <language> - Change the target language
 %set max_history_length <number> - Change the max history length
 """
-__version__ = "1.3.0"
+__version__ = "1.4.0"
+
 import os
 import sys
 import json
@@ -223,7 +225,7 @@ def TranslateWithDictionary(text, from_lang="zh", to_lang="en"):
             appid = CONFIG.get("appid")
             secret = CONFIG.get("secret")
             if not appid or not secret:
-                return "[Error] 百度翻译 appid/secret 未配置"
+                return "[Error] Baidu translate appid/secret was not configured."
 
             script_path = Path(__file__).parent / "Baidu.py"
             result = subprocess.run(
@@ -482,7 +484,7 @@ def main():
                 continue
             key = parts[1]
             value = " ".join(parts[2:])
-            valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length", "appid", "secret"]
+            valid_keys = ["provider", "theme", "auto_target_lang", "max_history_length", "appid", "secret", "auto_source_lang"]
             if key not in valid_keys:
                 print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
                 counter += 1
