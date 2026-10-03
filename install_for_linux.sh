@@ -8,7 +8,8 @@ else
     echo "::error::This script is not support this platform"
     exit 1
 fi
-echo -e "\033[33m[1/5] Install packages in isolated environment\033[0m"
+echo -e "\033[33mtip: if you have problems on the permissions,try to run this installer as root\033[0m"
+echo -e "\033[33m[1/4] Install run time dependencies\033[0m"
 if command -v python >/dev/null 2>&1; then
     echo "Python is already installed"
 else
@@ -23,7 +24,7 @@ else
     apt update -y &>/dev/null
     apt install -y git 2>/dev/null 1>/dev/null
 fi
-echo -e "\033[33m[2/5] Install runtime dependencies\033[0m"
+echo "solving dependencies through pip,this will take a minute"
 if pip show translate &>/dev/null; then
     echo "translate is already installed"
 else
@@ -36,13 +37,13 @@ else
     echo "rich is not installed,so install it"
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ rich
 fi
-echo -e "\033[33m[3/5] Clone repository\033[0m"
-cd ~
+echo -e "\033[33m[2/4] Clone repository\033[0m"
+cd /opt
 rm -rf nbtransh
 git clone https://github.com/tc0512/nbtransh.git
 rm nbtransh/*.sh
-echo -e "\033[33m[4/5] Genetate default configure file\033[0m"
-cat > $HOME/nbtransh/settings.json << 'EOF'
+echo -e "\033[33m[3/4] Genetate default configure file\033[0m"
+cat > /opt/nbtransh/settings.json << 'EOF'
 {
   "provider": "mymemory",
   "theme": "IPython",
@@ -51,8 +52,8 @@ cat > $HOME/nbtransh/settings.json << 'EOF'
   "max_history_length": 550
 }
 EOF
-echo -e "\033[33m[5/5] Create symbolic link to launch faster\033[0m"
-ln -s ~/nbtransh/nbtransh.py /usr/bin/nbtransh
+echo -e "\033[33m[4/4] Create symbolic link to launch faster\033[0m"
+ln -s /opt/nbtransh/nbtransh.py /usr/local/bin/nbtransh
 echo -e "\033[33mAll done!\033[0m"
-echo "· The nbtransh work directory is $HOME/nbtransh"
+echo "· The nbtransh work directory is /opt/nbtransh"
 echo "  Please donot remove it."
