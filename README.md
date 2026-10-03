@@ -4,23 +4,23 @@ python交互式翻译器
 ## 下载
 ### Windows PowerShell
 ```powershell
-curl -O https://github.com/tc0512/nbtransh/releases/download/v1.3.0/install_for_windows.ps1
+curl -O https://github.com/tc0512/nbtransh/releases/download/v1.4.0/install_for_windows.ps1
 # 右键 PowerShell 以管理员身份运行，然后执行
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\install_for_windows.ps1
 ```
 ### Linux
 ```bash
-curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v1.3.0/install_for_linux.sh | bash
+curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v1.4.0/install_for_linux.sh | bash
 ```
 ### MacOs
 ```zsh
-curl -O https://github.com/tc0512/nbtransh/releases/download/v1.3.0/install_for_MacOs.sh
+curl -O https://github.com/tc0512/nbtransh/releases/download/v1.4.0/install_for_MacOs.sh
 ./install_for_MacOs.sh
 ```
 ### Termux on Android
 ```bash
-curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v1.3.0/install_for_termux_on_android.sh | bash
+curl -fsSL https://github.com/tc0512/nbtransh/releases/download/v1.4.0/install_for_termux_on_android.sh | bash
 ```
 ### iOS
 1. App Store下载UTM
@@ -78,6 +78,7 @@ In[1]: Hello world! --en\>zh
 ### 设置
 ```%set list``` 查看已有设置
 ```%set provider <API服务器>``` 更改API
+```%set auto_source_lang <源语言>``` 更改默认源语言
 ```%set auto_target_lang <目标语言>``` 更改默认目标语言
 ```%set theme simple/IPython``` 主题设置: 朴素风格/IPython
 ```%set max_history_length <最大历史长度>``` 最大历史长度
