@@ -50,11 +50,15 @@ cat > /data/data/com.termux/files/home/nbtransh/settings.json << 'EOF'
   "theme": "IPython",
   "auto_source_lang": "zh",
   "auto_target_lang": "en",
-  "max_history_length": 550
+  "max_history_length": "550"
 }
 EOF
-echo -e "\033[32m[4/4] Create symbolic link to launch faster\033[0m"
-ln -s /data/data/com.termux/files/home/nbtransh/nbtransh.py /data/data/com.termux/files/usr/bin/nbtransh
+echo -e "\033[32m[4/4] Create shortcut to launch fuster\033[0m"
+cat >> /data/data/com.termux/files/usr/bin/nbtransh << 'EOF'
+#!/bin/bash
+python /data/data/com.termux/files/home/nbtransh/nbtransh.py
+EOF
+chmod +x /data/data/com.termux/files/usr/bin/nbtransh
 echo -e "\033[32mAll done!\033[0m"
-echo "· The nbtransh work directory is /data/data/com.termux/files/home/nbtransh/"
-echo "  Please donot remove it."
+echo "(*) Work directory: /data/data/com.termux/files/home/nbtransh/"
+echo "(*) Uninstall: rm -rf /data/data/com.termux/files/usr/bin/nbtransh /data/data/com.termux/files/home/nbtransh/"
