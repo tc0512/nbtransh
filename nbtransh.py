@@ -315,7 +315,8 @@ def ShowLicense():
 def ShowHelpText():
     print(HELP)
 def LoadHistory():
-    max_history_length = CONFIG.get("max_history_length", 550)
+    max_history_length = CONFIG.get("max_history_length", "550")
+    max_history_length = int(max_history_length)
     histfile = os.path.join(get_history_file_path())
     readline.read_history_file(histfile)
     readline.set_history_length(max_history_length)
