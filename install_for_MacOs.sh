@@ -22,7 +22,7 @@ ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ]; then
     echo -e "${GREEN}✓ 检测到 Apple Silicon (M1/M2/M3) 芯片${NC}"
 else
-    echo -e "${GREEN}✓ 检测到 Intel 芯片${NC}"
+    echo -e "${GREEN}✓ 检测到其他芯片${NC}"
 fi
 echo ""
 
@@ -79,7 +79,7 @@ echo -e "[4/7] 安装 Python 依赖包..."
 pip3 install --upgrade pip -q
 
 # 依赖列表
-PACKAGES=("translate" "rich" "lxml" "beautifulsoup4" "requests")
+PACKAGES=("translate" "rich" "lxml")
 
 for pkg in "${PACKAGES[@]}"; do
     echo -e "  正在安装 ${YELLOW}$pkg${NC}..."
