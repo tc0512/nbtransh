@@ -24,7 +24,6 @@ else
     apt update -y &>/dev/null
     apt install -y git 2>/dev/null 1>/dev/null
 fi
-echo "solving dependencies through pip,this will take a minute"
 if pip show translate &>/dev/null; then
     echo "translate is already installed"
 else
@@ -49,11 +48,15 @@ cat > /opt/nbtransh/settings.json << 'EOF'
   "theme": "IPython",
   "auto_source_lang": "zh",
   "auto_target_lang": "en",
-  "max_history_length": 550
+  "max_history_length": "550"
 }
 EOF
-echo -e "\033[33m[4/4] Create symbolic link to launch faster\033[0m"
-ln -s /opt/nbtransh/nbtransh.py /usr/local/bin/nbtransh
+echo -e "\033[33m[4/4] Create shortcut to launch faster\033[0m"
+cat >> /usr/local/bin/nbtransh << 'EOF'
+#!/bin/bash
+python /opt/nbtransh/nbtransh.py
+EOF
+chmod +x /usr/local/bin/nbtransh
 echo -e "\033[33mAll done!\033[0m"
-echo "· The nbtransh work directory is /opt/nbtransh"
-echo "  Please donot remove it."
+echo "(*) Work directory: /opt/nbtransh"
+echo "(*) Uninstall: rm -rf /usr/local/bin/nbtransh /opt/nbtransh/"
