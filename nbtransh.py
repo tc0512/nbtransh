@@ -34,7 +34,7 @@ In[2]: %begin long
   ...: 这是一段长文本
   ...: 需要换行处理
   ...: %end long
-  ...: --zh>en
+  ***: --zh>en
 This is a paragraph of long text.
 Needs line break to handle.
 
@@ -358,7 +358,7 @@ def main():
             lines = []
             while True:
                 try:
-                    tip_word = " "*len(str(counter))+"  "+"...:"+" " if CONFIG["theme"]=="IPython" else ""
+                    tip_word = " "*len(str(counter))+"  "+"...:"+" " if CONFIG["theme"]=="IPython" else ". "
                     line = input(tip_word)
                 except EOFError:
                     break
@@ -371,7 +371,7 @@ def main():
                 print()
                 counter += 1
                 continue
-            print(tip_word, end="")
+            print(tip_word.replace(".", "*"), end="")
             try:
                 lang_input = input().strip()
             except EOFError:
