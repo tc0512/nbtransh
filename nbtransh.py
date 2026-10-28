@@ -113,7 +113,7 @@ try:
 except ImportError:
     print("Error: no module named 'readline'")
     print("(*) If your system is Windows, please run 'pip install pyreadline' to install it.")
-    print("(*) Else,check your python is or is not full installed.")
+    print("(*) Else,check if python is fully installed.")
     sys.exit(1)
 # ===== 新增：加载配置 =====
 CONFIG_FILE = Path(__file__).parent / "settings.json"
