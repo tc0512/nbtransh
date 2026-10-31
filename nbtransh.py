@@ -358,8 +358,9 @@ def main():
             lines = []
             while True:
                 try:
-                    tip_word = " "*len(str(counter))+"  "+"...:"+" " if CONFIG["theme"]=="IPython" else ". "
-                    line = input(tip_word)
+                    tip_word = " "*len(str(counter))+"  "+"[green]...:[/green]"+" " if CONFIG["theme"]=="IPython" else ". "
+                    rich.print(tip_word, end="")
+                    line = input()
                 except EOFError:
                     break
                 if line.strip() == "%end long":
@@ -371,7 +372,7 @@ def main():
                 print()
                 counter += 1
                 continue
-            print(tip_word.replace(".", "*"), end="")
+            rich.print(tip_word.replace(".", "*"), end="")
             try:
                 lang_input = input().strip()
             except EOFError:
