@@ -39,27 +39,27 @@ This is a paragraph of long text.
 Needs line break to handle.
 
 Language labels:
-zh=Simplified Chinese
-zh-TW=Traditional Chinese
-yue=Cantonese
-en=English
-ja=Japanese
-ko=Korean
-fr=French
-es=Spanish
-it=Italian
-nl=Netherlands
-tr=Turkey
-hi=Hindi
-th=Thai
-el=Greek
-sv=Swedish
-fi=Finland
-cs=Czech
-ro=Romanian
-pt=Portuguese
-de=German
-ru=Russian
+zh    - Simplified Chinese
+zh-TW - Traditional Chinese
+yue   - Cantonese
+en    - English
+ja    - Japanese
+ko    - Korean
+fr    - French
+es    - Spanish
+it    - Italian
+nl    - Netherlands
+tr    - Turkey
+hi    - Hindi
+th    - Thai
+el    - Greek
+sv    - Swedish
+fi    - Finland
+cs    - Czech
+ro    - Romanian
+pt    - Portuguese
+de    - German
+ru    - Russian
 
 Dictionary commands:
 %dictionary generate                  - Create an empty dictionary
@@ -75,12 +75,12 @@ Show history:
 Change settings:
 %set show                        - Show the configurations
 %set provider <API>              - Change the translate API
-%set theme <theme>               - Change the theme(IPython or simple)
+%set theme <theme>               - Change the theme {IPython,simple,SeaBlue,Dark,Orange}
 %set auto_source_lang <language> - Change the source language
 %set auto_target_lang <language> - Change the target language
 %set max_history_length <number> - Change the max history length
 """
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 
 import os
 import sys
@@ -339,10 +339,15 @@ def main():
         time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
         theme = CONFIG.get("theme", "IPython")
-        if theme == "IPython":
-            rich.print(f"[green]In [{counter}]: [/green]", end="")
-        else:
-            print("> ", end="")
+        color_change_rule = {
+            "IPython": "green",
+            "SeaBlue": "blue",
+            "Dark": "dark_green",
+            "Orange": "orange1",
+            "simple": "default"
+        }
+        color = color_change_rule[theme]
+        rich.print(f"[{color}]In [{counter}]: [/{color}]", end="")
 
         try:
             stdin = input()
@@ -358,7 +363,7 @@ def main():
             lines = []
             while True:
                 try:
-                    tip_word = " "*len(str(counter))+"  "+"[green]...:[/green]"+" " if CONFIG["theme"]=="IPython" else ". "
+                    tip_word = " "*len(str(counter))+"  "+f"[{color}]...:[/{color}]"+" "
                     rich.print(tip_word, end="")
                     line = input()
                 except EOFError:
@@ -491,8 +496,8 @@ def main():
                 print(f"Invalid key: {key}. Valid keys: {', '.join(valid_keys)}\n")
                 counter += 1
                 continue
-            if key == "theme" and value not in ["IPython", "simple"]:
-                print(f"Invalid theme: {value}. Valid: IPython, simple\n")
+            if key == "theme" and value not in ["IPython", "simple", "SeaBlue", "Dark", "Orange"]:
+                print(f"Invalid theme: {value}. Valid: IPython, simple, SeaBlue, Dark, Orange\n")
                 counter += 1
                 continue
             CONFIG[key] = value
