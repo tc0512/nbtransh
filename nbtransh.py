@@ -214,7 +214,7 @@ def TranslateWithDictionary(text, from_lang="zh", to_lang="en"):
         if to_lang in word_dict:
             return word_dict[to_lang]
         if "en" in word_dict:
-            rprint("[yellow]WARNING:Target language is missing,using English fallback[/yellow]")
+            rich.print("[yellow]WARNING:Target language is missing,using English fallback[/yellow]")
             return word_dict["en"]
 
     # 2️⃣ 在线 API 配置
@@ -226,25 +226,8 @@ def TranslateWithDictionary(text, from_lang="zh", to_lang="en"):
             secret = CONFIG.get("secret")
             if not appid or not secret:
                 return "[Error] Baidu translate appid/secret was not configured."
-
-            script_path = Path(__file__).parent / "Baidu.py"
-            result = subprocess.run(
-                [
-                    "python",
-                    str(script_path),
-                    text,
-                    from_lang,
-                    to_lang,
-                    appid,
-                    secret
-                ],
-                capture_output=True,
-                text=True,
-                check=False
-            )
-            if result.returncode != 0:
-                return f"[Translation Error] {result.stderr.strip()}"
-            return result.stdout.strip()
+            from Baidu import baidu_translate
+            return baidu_translate(text, from_lang, to_lang, appid, secret)
 
         else:
             # 其他 provider（如 mymemory）
