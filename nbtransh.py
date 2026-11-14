@@ -89,7 +89,7 @@ import platform
 from datetime import datetime
 from pathlib import Path
 import atexit
-import subprocess
+import argparse
 try:
     from translate import Translator
 except ImportError:
@@ -305,7 +305,7 @@ def LoadHistory():
     readline.set_history_length(max_history_length)
     readline.parse_and_bind("tab: complete")
     atexit.register(readline.write_history_file, get_history_file_path())
-def main():
+def repl():
     python_version = platform.python_version()
     now = datetime.now()
     time_str = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -511,5 +511,17 @@ def main():
             rich.print(f"[red]Error: {e}[/red]\n")
 
         counter += 1
-if __name__ == "__main__":
+
+def main():
+    parser = argparse.ArgumentParser(description="nbtransh")
+    parser.add_argument('--version', '-v', action='version', version=f"%(prog)s {__version__}")    
+    parser.add_argument('--repl', action='store_true', help='Start REPL')
+    args = parser.parse_args()
+    if args.repl:
+        repl()
+        return
+    else:
+        parser.print_help()
+
+if __name__=="__main__":
     main()
