@@ -54,7 +54,7 @@ EOF
 echo -e "\033[33m[4/4] Create shortcut to launch faster\033[0m"
 cat >> /usr/local/bin/nbtransh << 'EOF'
 #!/bin/bash
-python /opt/nbtransh/nbtransh.py
+exec python /opt/nbtransh/nbtransh.py "$@"
 EOF
 chmod +x /usr/local/bin/nbtransh
 echo -e "\033[33mAll done!\033[0m"

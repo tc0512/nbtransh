@@ -56,7 +56,7 @@ EOF
 echo -e "\033[32m[4/4] Create shortcut to launch fuster\033[0m"
 cat >> /data/data/com.termux/files/usr/bin/nbtransh << 'EOF'
 #!/bin/bash
-python /data/data/com.termux/files/home/nbtransh/nbtransh.py
+exec python /data/data/com.termux/files/home/nbtransh/nbtransh.py "$@"
 EOF
 chmod +x /data/data/com.termux/files/usr/bin/nbtransh
 echo -e "\033[32mAll done!\033[0m"
