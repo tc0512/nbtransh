@@ -516,10 +516,18 @@ def main():
     parser = argparse.ArgumentParser(description="nbtransh")
     parser.add_argument('--version', '-v', action='version', version=f"%(prog)s {__version__}")    
     parser.add_argument('--repl', action='store_true', help='Start REPL')
+    parser.add_argument('-c', action='store_true', help='Translate a simple sentence in the command line')
+    parser.add_argument('sentence', nargs='?', help='The sentence which you want to translate, along with `-c` argument')
     args = parser.parse_args()
     if args.repl:
         repl()
         return
+    elif args.c:
+        if not args.sentence:
+            parser.error("`-c` argument needs a sentence argument, for example: `nbtransh -c '你好，世界！ --zh>en'`")
+        text, from_lang, to_lang = ParseStdin(args.sentence)
+        result = TranslateWithDictionary(text, from_lang, to_lang)
+        print(result)
     else:
         parser.print_help()
 
